@@ -2,9 +2,11 @@ package network;
 
 public class Letter {
 
-	public int letter[][];					//wejœcia czyli tablica zawieraj¹ca ci¹g 0 i 1 przedstawiaj¹cych dan¹ litere																								//wspó³czynnik uczenia
-	public char[] charLetter = {'A','B','C','D','E','F','G','H','I','J','a','b','c','d','e','f','g','h','i','j'};		//litera w formacie ASCII
-	public static int[] result = {1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0}; //result=1 du¿a litera, result=0 ma³a litera
+	public int letter[][];	
+	//litera w formacie ASCII
+	public char[] charLetter = {'A','B','C','D','E','F','G','H','I','J','a','b','c','d','e','f','g','h','i','j'};
+	//result=1 du¿a litera, result=0 ma³a litera
+	public static int[] result = {1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0}; 
 	
 	public Letter(){
 		letter = new int[7][5];

@@ -17,12 +17,12 @@ public class Network {
 		weights[i] = Math.random();					//losowanie pocz¹tkowych wag
 	}
 		Adaline adaline = new Adaline(myController);
-		adaline.startAdaline(weights);
-		adaline.testing(weights);
+		//adaline.startAdaline(weights);
+		//adaline.testing(weights);
 		
 		Sigmoidal sigmoidal = new Sigmoidal(myController);
-		//sigmoidal.startSigmoidal(weights);
-		//sigmoidal.testing(weights);
+		sigmoidal.startSigmoidal(weights);
+		sigmoidal.testing(weights);
 		
 	}
 

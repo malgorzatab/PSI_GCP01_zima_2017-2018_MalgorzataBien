@@ -5,10 +5,8 @@ public class Sigmoidal {
 	
 	private Controller myController;	
 	private double BETA = 1;
-	public static final double LEARNING_RATE=0.05;								//wspó³czynnik uczenia
+	public static final double LEARNING_RATE=0.1;								//wspó³czynnik uczenia
 	public char[] charLetter = {'A','B','C','D','E','F','G','H','I','J','a','b','c','d','e','f','g','h','i','j'};		//litera w formacie ASCII
-	static String filename = "C:\\Users\\Gosia\\Desktop\\PSIprojects\\Letters_Recognition\\src\\network\\alfabet.txt";
-	private double MAPE=0.0; //procentowy blad
 	private double MSE=0.0; //sredniokwadratowy
 	
 	public Sigmoidal(Controller controller) {
@@ -16,98 +14,79 @@ public class Sigmoidal {
 	}
 	
 	public void startSigmoidal(double[]weights){	
-													
-			double[] inputSum = new double[20];				//tablica dla sumy ka¿dej litery
 			double sum=0.0;			
 			double[] Sum = new double[20];	
-			int epoka=0;									//licznik iteracji
-			boolean errorFlag = false;
+			int epoka=0;		//licznik iteracji-epok
 			double delta = 0.0;
 			double mseerror=0;
-			double[] adjustedWeights;				//tablica wag po korekcie			
+			double[] adjustedWeights;//tablica wag po korekcie			
 			
 			Alphabet alphabet = new Alphabet();
+			//wczytanie liter z pliku
 			Letter[] letters = alphabet.inputAlphabet();
 			int[] result = Letter.result;
+			//tablica z wartoœciami oczekiwanymi
 			int [][]letter = alphabet.letterSet;
 			
 			if (letters == null) {
-	            System.out.println("LoadFile error!");	            
+	            System.out.println("Error reading file");	            
 	        }
-			myController.setText("\nSIGMOIDAL");
-	        myController.setText("\n----------------------");
-	        myController.setText("-------LEARNING-----------------------\n");
+			myController.setText("--SIGMOIDAL--\n");
+	        myController.setText("--LEARNING--\n");
 	
 	        do{			
 	        	epoka++;
-				MSE=0.0;
-				MAPE=0.0;			
-				errorFlag=false;				
-				int k=0;
+				MSE=0.0;					
 				int p=0;
-				for(int i=0; i<20; i++){
-					p++;						
+				for(int i=0; i<20; i++){									
+					//obliczanie sumy po³¹czenia na wejœciu neuronu
 					sum = letters[i].processCellNode(weights);
+					//przes³anie sumy do funkcji aktywacji
 					double output = activationFunction(sum);
-					
-					//myController.setText("output: "+p+": "+output+"\n");					
-					delta = result[i] - output;
-					k=0;
-					//updating weights
-	                for (int m = 0; m < 7; m++) {
-	                    for (int n = 0; n < 5; n++) {
-	                        weights[k] += LEARNING_RATE * delta * letters[i].getLetter(m, n);
-	                        k++;
+					//sprawdzanie ró¿nicy miêdzy wartoœci¹ oczekiwan¹ a aktualn¹ otrzyman¹
+					delta = result[i] - output;	
+					//korekta wag
+					p=0;				
+	                for (int k = 0; k < 7; k++) {
+	                    for (int j = 0; j < 5; j++) {
+	                        weights[p] += LEARNING_RATE * delta * letters[i].getLetter(k, j);
+	                        p++;
 	                    }
-	                }														 
-					mseerror=0.5*(result[0] - sum)*(result[0] - sum);
+	                }													 
+					mseerror=0.5*(delta*delta);
 					mseerror /=20;
 	                MSE += (delta*delta);
-	                MAPE += (Math.abs(delta)/output);
 	                MSE /= 20;
-	                MAPE /= 20;	               
-				}	
-				
-	            System.out.println("Err: "+mseerror);
-
-			
-			}while(MSE> 0.05);
+				}				
+			}while(mseerror> 0.00001);
 			
 	        myController.setText("Epoka "+epoka+"\n");
-	        myController.setText("MSE: "+MSE+"\n");
-	        myController.setText("MAPE: "+MAPE+"\n");
-	        
-			
-			
+	        myController.setText("MSError: "+mseerror+"\n");		
 	}
 	
 	
 	public void testing(double[]weights){
 		Alphabet alphabet = new Alphabet();
 		Letter[] testletters = alphabet.inputTestAlphabet();
-		double sum=0.0;
 		double[] suma = new double[20];
-		int output=0;
 		double out=0;
-		 this.myController.setText("\n-------Testing-------\n");
+		 this.myController.setText("\nTesting:\n");
+		 this.myController.setText("--------\n");
 		 for (int i = 0; i < 20; i++) {
 
-	            myController.setText(" TEST:  " + charLetter[i]+ "\n");
+	            myController.setText("Letter:  " + charLetter[i]+ "\n");
 	            suma[i] = testletters[i].processCellNode(weights);
 	            out = activationFunction(suma[i]);
-	         
-	           // myController.setText("output: "+out);
-	            if(out >= 0.9976){
-	                myController.setText("LETTER: UPPERCASE\n\n");
+	            if(out >= 0.80){
+	                myController.setText("Result: UPPERCASE\n\n");
 	            }else{
 
-	                myController.setText("LETTER: LOWERCASE\n\n");
+	                myController.setText("Result: LOWERCASE\n\n");
 	            }
 	        }
 	}
 
-	
-	
+	//funckja aktywacji
 	   private double activationFunction(double sum){
 
 	        return ( 1 / ( 1 + Math.exp(-BETA * sum)));
@@ -124,13 +103,13 @@ public class Sigmoidal {
 		return inputWeights;
 	}
 	
+	//funkcja sumuj¹ca 
 	public double calculateSum(int[] tab, double[] weights){
         double sum = 0;
-        for(int x=0; x < tab.length; x++)
-            sum += tab[x] * weights[x];
+        for(int i=0; i < tab.length; i++)
+            sum += tab[i] * weights[i];
         return sum;
     }
-	 
 	
 	
 }
